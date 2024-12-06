@@ -49,7 +49,7 @@ case "$1" in
         )
 
         # Start building the docker run command
-        CMD="docker run --platform linux/amd64 -p 3000:3000 -d"
+        CMD="docker run --platform linux/amd64 -p 8080:3000 -d"
 
         # Add base mounts
         for mount in "${BASE_MOUNTS[@]}"; do
@@ -64,14 +64,14 @@ case "$1" in
         # Add core types mount separately (special case)
         CMD="$CMD -v \"$(pwd)/packages/core/types:/app/packages/core/types\""
 
-        # Add container name and image
-        CMD="$CMD --name eliza eliza"
+        # Add container name and image and startup command
+        CMD="$CMD --name eliza eliza /bin/bash -c 'cd /app && pnpm start --characters=\"characters/ai16zMemeGPT.character.json\"'"
 
         # Execute the command
         eval $CMD
         ;;
     start)
-        docker start eliza
+        docker start -a eliza
         ;;
     bash)
         # Check if the container is running before executing bash

@@ -22,7 +22,12 @@ ADD tsconfig.json /app/tsconfig.json
 ADD pnpm-lock.yaml /app/pnpm-lock.yaml
 
 # Install dependencies
-RUN pnpm install
+RUN pnpm install --frozen-lockfile && \
+    pnpm add -w -D ts-node typescript @types/node || \
+    (echo "Retrying dependency installation..." && \
+    rm -rf node_modules && \
+    pnpm install --frozen-lockfile && \
+    pnpm add -w -D ts-node typescript @types/node)
 
 # Copy source code
 ADD docs /app/docs
